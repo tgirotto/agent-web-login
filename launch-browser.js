@@ -93,8 +93,81 @@ const { chromium } = require('playwright');
   }
   
   console.log('🔄 Browser is open and ready for interaction via VNC');
+  console.log('💡 Close the browser window to signal completion');
   
-  // Keep browser open indefinitely
+  // Function to check if we should exit
+  const checkAndExit = async () => {
+    try {
+      const pages = context.pages();
+      if (pages.length === 0) {
+        console.log('🔚 All browser pages closed - shutting down');
+        try {
+          await browser.close();
+        } catch (e) {
+          // Browser might already be closed
+        }
+        process.exit(0);
+      }
+    } catch (e) {
+      // Context might be closed
+      console.log('🔚 Browser context closed - shutting down');
+      process.exit(0);
+    }
+  };
+  
+  // Set up close handler for the initial page
+  page.on('close', () => {
+    console.log('📄 Page closed, checking if should exit...');
+    checkAndExit();
+  });
+  
+  // Watch for browser disconnection
+  browser.on('disconnected', () => {
+    console.log('🔚 Browser disconnected - shutting down');
+    process.exit(0);
+  });
+  
+  // Watch for context closure
+  context.on('close', () => {
+    console.log('🔚 Browser context closed - shutting down');
+    process.exit(0);
+  });
+  
+  // Watch for new pages and set up close handlers
+  context.on('page', (newPage) => {
+    console.log('📄 New page opened');
+    newPage.on('close', () => {
+      console.log('📄 Page closed, checking if should exit...');
+      checkAndExit();
+    });
+  });
+  
+  // Poll periodically to check if browser is still connected and pages exist
+  // This handles cases where the browser window is closed but events don't fire
+  const pollInterval = setInterval(() => {
+    try {
+      if (!browser.isConnected()) {
+        console.log('🔚 Browser connection lost (polled) - shutting down');
+        clearInterval(pollInterval);
+        process.exit(0);
+      }
+      
+      // Check if all pages are closed
+      const pages = context.pages();
+      if (pages.length === 0) {
+        console.log('🔚 All pages closed (polled) - shutting down');
+        clearInterval(pollInterval);
+        checkAndExit();
+      }
+    } catch (e) {
+      // Browser/context might be closed
+      console.log('🔚 Browser check failed (polled) - shutting down');
+      clearInterval(pollInterval);
+      process.exit(0);
+    }
+  }, 2000); // Check every 2 seconds
+  
+  // Keep browser open until closed or completion signal
   await new Promise(() => {});
 })().catch((error) => {
   console.error('❌ Fatal error launching browser:', error);

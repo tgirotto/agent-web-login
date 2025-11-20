@@ -31,6 +31,10 @@ Once the container is running, you can access the browser via VNC:
 
 The browser will automatically navigate to the specified URL and remain open for interaction. All browser state (cookies, local storage, etc.) is persisted in the credentials path directory.
 
+## Signaling Completion
+
+The container will run until you close the browser window. Simply close the Chromium browser window via VNC, and the container will detect the browser closure and exit gracefully, saving all browser state to the credentials path before shutting down.
+
 ## Build
 
 ```bash

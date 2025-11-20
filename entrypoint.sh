@@ -61,6 +61,32 @@ BROWSER_PID=$!
 echo "✅ All services started!" >&2
 echo "📺 VNC available at: http://localhost:6080/vnc.html" >&2
 echo "🌐 Browser navigating to: ${URL}" >&2
+echo "💡 Close the browser window to signal completion" >&2
 
-# Keep the script running and wait for processes
-wait
+# Function to cleanup and exit
+cleanup_and_exit() {
+    echo "🛑 Shutting down..." >&2
+    # Kill all background processes
+    kill $BROWSER_PID 2>/dev/null || true
+    kill $NOVNC_PID 2>/dev/null || true
+    kill $VNC_PID 2>/dev/null || true
+    kill $FLUXBOX_PID 2>/dev/null || true
+    kill $XVFB_PID 2>/dev/null || true
+    echo "✅ Cleanup complete" >&2
+    exit 0
+}
+
+# Set up signal handlers for graceful shutdown
+trap cleanup_and_exit SIGTERM SIGINT
+
+# Watch for browser process to exit
+while true; do
+    # Check if browser process (Node.js) is still running
+    if ! kill -0 $BROWSER_PID 2>/dev/null; then
+        echo "🔚 Browser process ended - shutting down" >&2
+        cleanup_and_exit
+    fi
+    
+    # Sleep briefly before checking again
+    sleep 1
+done
