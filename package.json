@@ -1,0 +1,10 @@
+{
+  "name": "agent-web-login",
+  "version": "0.0.1",
+  "description": "Web login agent using Playwright with VNC support",
+  "main": "launch-browser.js",
+  "dependencies": {
+    "playwright": "1.43.1"
+  }
+}
+

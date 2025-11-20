@@ -1,0 +1,9 @@
+*
+!entrypoint.sh
+!launch-browser.js
+!package.json
+!starthub.json
+!.dockerignore
+!.gitignore
+!README.md
+!Dockerfile

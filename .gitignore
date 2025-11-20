@@ -1,0 +1,17 @@
+/target
+/dist
+/node_modules
+*.log
+*.tmp
+.DS_Store
+.env
+.env.*
+starthub.lock.json
+*.tar
+*.zip
+package-lock.json
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

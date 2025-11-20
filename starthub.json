@@ -1,0 +1,26 @@
+{
+  "name": "agent-web-login",
+  "description": "Web login agent using Playwright with VNC support",
+  "version": "0.0.1",
+  "kind": "docker",
+  "manifest_version": 1,
+  "repository": "https://github.com/tgirotto/agent-web-login",
+  "license": "MIT",
+  "inputs": [
+    {
+      "name": "url",
+      "description": "URL to navigate to",
+      "type": "string",
+      "required": true,
+      "default": ""
+    },
+    {
+      "name": "credentials_path",
+      "description": "Path to a folder containing browser credentials",
+      "type": "string",
+      "required": true,
+      "default": null
+    }
+  ],
+  "outputs": []
+}
